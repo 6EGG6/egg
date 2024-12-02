@@ -1,0 +1,74 @@
+import streamlit as st
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
+# Function to initialize the Selenium WebDriver
+def initialize_driver():
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')  # Run browser in headless mode
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+
+    service = Service()
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    return driver
+
+
+# Function to check the website
+def check_website(url):
+    try:
+        driver = initialize_driver()
+        wait = WebDriverWait(driver, 10)  # Timeout after 10 seconds
+
+        driver.get(url)
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, 'body')))  # Wait until the body is loaded
+
+        # You can add more checks here to verify specific elements
+        page_title = driver.title
+        driver.quit()  # Close the browser
+
+        return f"Website opened successfully. Title: {page_title}"
+    except Exception as e:
+        return f"Error accessing the site: {str(e)}"
+
+
+# Streamlit Code
+
+st.title('Website Monitoring with Streamlit and Selenium')
+url_input = st.text_input('Enter the URL to monitor', 'https://fun.virtuals.io/')
+if st.button('Check Website'):
+    status = check_website(url_input)
+    st.write(status)
+    # To run your Streamlit app, open a terminal or command prompt and execute:
+    # streamlit run path_to_your_script.py
+
+    # Ensure to start your Streamlit app using the `streamlit run` command to avoid ScriptRunContext warnings.
+    # If you frequently switch between bare mode and Streamlit's run mode, consider using a script
+    # or a batch file to streamline the process. Here's how you might set this up:
+
+    # Here is how you might set up a script to run your Streamlit app:
+
+    # Save the following lines in a file with a .bat extension if you're on Windows:
+    r"""
+    @echo off
+    set VENV_PATH=C:\Users\l2490\PycharmProjects\PythonProject1\.venv\Scripts
+    set SCRIPT_PATH=path_to_your_script.py
+    call %VENV_PATH%\activate.bat
+    streamlit run C:\Users\l2490\PycharmProjects\PythonProject1\.venv\Scripts\11.py [ARGUMENTS]
+    """
+# Save the following lines in a file with a .bat extension if you're on Windows:
+
+# @echo off
+# set VENV_PATH=C:\Users\l2490\PycharmProjects\PythonProject1\.venv\Scripts
+# set SCRIPT_PATH=path_to_your_script.py
+# call %VENV_PATH%\activate.bat
+# streamlit run %SCRIPT_PATH%
+
+# This script will activate your virtual environment and run your Streamlit app.
+# Remember to replace `path_to_your_script.py` with the actual path to your Streamlit script.
